@@ -1,12 +1,9 @@
-# Backend Engineering Assessment Starter
+# Backend Engineering Assessment
 
-This repository is a standalone starter for the backend engineering take-home assessment.
-It contains two independent services in a shared mono-repo:
+This repository contains two independent backend services for the take-home assessment:
 
-- `python-service/` (InsightOps): FastAPI + SQLAlchemy + manual SQL migrations
-- `ts-service/` (TalentFlow): NestJS + TypeORM
-
-The repository is intentionally incomplete for assessment features. Candidates should build within the existing structure and patterns.
+- **`python-service/`** (InsightOps): FastAPI + SQLAlchemy — Mini Briefing Report Generator
+- **`ts-service/`** (TalentFlow): NestJS + TypeORM — Candidate Document Intake + Summary Workflow
 
 ## Prerequisites
 
@@ -15,26 +12,106 @@ The repository is intentionally incomplete for assessment features. Candidates s
 - Node.js 22+
 - npm
 
-## Start Postgres
+## Quick Start
 
-From the repository root:
+### 1. Start PostgreSQL
 
 ```bash
+# Run this command from the root of the repository
 docker compose up -d postgres
 ```
 
-This starts PostgreSQL on `localhost:5432` with:
+This starts PostgreSQL on `localhost:5432` with database `assessment_db`, user `assessment_user`, password `assessment_pass`.
 
-- database: `assessment_db`
-- user: `assessment_user`
-- password: `assessment_pass`
+---
 
-## Service Guides
+### 2. Python Service (InsightOps)
 
-- Python service setup and commands: [python-service/README.md](python-service/README.md)
-- TypeScript service setup and commands: [ts-service/README.md](ts-service/README.md)
+```bash
+cd python-service
+python -m venv .venv
 
-## Notes
+# Windows
+.venv\Scripts\activate
 
-- Keep your solution focused on the assessment tasks.
-- Do not replace the project structure with a different architecture.
+# macOS/Linux
+source .venv/bin/activate
+
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+**Run migrations:**
+```bash
+python -m app.db.run_migrations up
+```
+
+**Run service:**
+```bash
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+**Run tests:**
+```bash
+python -m pytest -v
+```
+
+#### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/briefings` | Create a briefing |
+| `GET` | `/briefings/{id}` | Retrieve a briefing |
+| `POST` | `/briefings/{id}/generate` | Generate HTML report |
+| `GET` | `/briefings/{id}/html` | Fetch rendered HTML |
+
+---
+
+### 3. TypeScript Service (TalentFlow)
+
+```bash
+cd ts-service
+npm install
+cp .env.example .env
+```
+
+**Configure LLM (optional):** Add your Gemini API key to `.env`:
+```
+GEMINI_API_KEY=your_key_here
+```
+Get a free key at [Google AI Studio](https://aistudio.google.com/apikey). Without a key, the service uses a fake provider (suitable for testing).
+
+**Run migrations:**
+```bash
+npm run migration:run
+```
+
+**Run service (runs on http://localhost:3000):**
+```bash
+npm run start:dev
+```
+
+**Run tests:**
+```bash
+npm test
+```
+
+#### API Endpoints
+
+All candidate endpoints require auth headers: `x-user-id` and `x-workspace-id`.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/sample/candidates` | Create initial candidate. Body: `{"fullName": "...", "email": "..."}` |
+| `POST` | `/candidates/:candidateId/documents` | Upload a candidate document |
+| `POST` | `/candidates/:candidateId/summaries/generate` | Request async summary generation |
+| `GET` | `/candidates/:candidateId/summaries` | List summaries for a candidate |
+| `GET` | `/candidates/:candidateId/summaries/:summaryId` | Retrieve a single summary |
+
+**Note:** You must create a candidate first via `POST /sample/candidates` to get a `candidateId` for the other endpoints.
+
+---
+
+## Design Decisions & Notes
+
+See [NOTES.md](NOTES.md) for detailed design decisions, schema rationale, and tradeoffs.

@@ -1,0 +1,68 @@
+<section>
+  <header>
+    <h2>Company Briefing</h2>
+  </header>
+
+  <section>
+    <h3>Company Information</h3>
+    <p><strong>Company Name:</strong> {{ company_name }}</p>
+    <p><strong>Ticker:</strong> {{ ticker }}</p>
+    {% if sector %}
+    <p><strong>Sector:</strong> {{ sector }}</p>
+    {% endif %}
+    {% if analyst_name %}
+    <p><strong>Analyst Name:</strong> {{ analyst_name }}</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h3>Executive Summary</h3>
+    <p>{{ summary }}</p>
+  </section>
+
+  <section>
+    <h3>Recommendation</h3>
+    <p>{{ recommendation }}</p>
+  </section>
+
+  <section>
+    <h3>Key Points</h3>
+    <ul>
+      {% for point in key_points %}
+      <li>{{ point.content }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h3>Risks</h3>
+    <ul>
+      {% for risk in risks %}
+      <li>{{ risk.content }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if has_metrics %}
+  <section>
+    <h3>Metrics</h3>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for metric in metrics %}
+        <tr>
+          <td>{{ metric.name }}</td>
+          <td>{{ metric.value }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+</section>
+

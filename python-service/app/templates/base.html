@@ -23,7 +23,7 @@
   <body>
     <main>
       <h1>{{ title }}</h1>
-      <div>{{ body }}</div>
+      <div>{{ body|safe }}</div>
     </main>
     <footer>Generated at: {{ generated_at }}</footer>
   </body>

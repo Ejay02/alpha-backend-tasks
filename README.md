@@ -1,4 +1,4 @@
-# Backend Engineering Assessment
+# Backend Engineering
 
 This repository contains two independent backend services for the take-home assessment:
 
